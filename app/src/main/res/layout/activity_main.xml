@@ -10,10 +10,14 @@
         android:layout_gravity="center_vertical"
         android:background="@mipmap/index_background"
         android:orientation="vertical">
-
+        <!-- 顶部 -->
         <include layout="@layout/topbar"/>
 
+        <!-- 唱片 -->
         <include layout="@layout/pan_layout"/>
+
+        <!-- 文字框 -->
+        <include layout="@layout/name_select"/>
     </LinearLayout>
 
 </FrameLayout>
