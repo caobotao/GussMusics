@@ -31,13 +31,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by caobotao on 16/1/30.
  */
 public class MainActivity extends Activity implements IWordButtonClickListener {
     private static final String TAG = "MainActivity";
-
     //正确答案
     private static final int STATUS_ANSWER_RIGHT = 1;
     //错误答案
@@ -70,6 +71,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
     //已选择文字框的UI容器
     private LinearLayout mWordsLayout;
 
+    //过关界面布局
+    private LinearLayout mPassStageLayout;
+
     //当前歌曲
     private Song mCurrentSong;
     //当前关卡索引
@@ -90,7 +94,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         initCurrentStageData();
     }
 
-    //获取当前关卡歌曲信息
+    /**
+     * 获取当前关卡歌曲信息
+     */
     private Song getStageSong(int stageIndex) {
         String[] songInfo = Const.SONGS_INFO[stageIndex];
         String songFIleName = songInfo[Const.INDEX_FILE_NAME];
@@ -99,7 +105,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         return song;
     }
 
-    //初始化当前关的文字框数据
+    /**
+     * 初始化当前关的文字框数据
+     */
     private void initCurrentStageData() {
         //读取当前关的歌曲信息
         mCurrentSong = getStageSong(++mCurrentStageIndex);
@@ -166,7 +174,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         return data;
     }
 
-    //生成所有的待选文字
+    /**
+     * 生成所有的待选文字
+     */
     private String[] generateWords() {
         String[] words = new String[WordGridView.WORDS_COUNT];
         //存入歌名
@@ -188,7 +198,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         return words;
     }
 
-    //初始化事件
+    /**
+     * 初始化事件
+     */
     private void initEvent() {
         mBarInAnim.setAnimationListener(new AnimationListener() {
             @Override
@@ -255,15 +267,17 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         mGridView.setWordButtonClickListener(this);
     }
 
-    //处理点击播放按钮的逻辑
+    /**
+     * 处理点击播放按钮的逻辑
+     */
     private void handlePlayButton() {
         //开始控制杆移入的动画
         mViewPanBar.startAnimation(mBarInAnim);
     }
 
-
-
-    //初始化控件
+    /**
+     * 初始化控件
+     */
     private void initView() {
         mIbtnPlayStart = (ImageButton) findViewById(R.id.ibtn_play_start);
         mViewPan = (ImageView) findViewById(R.id.iv_game_disc);
@@ -272,9 +286,12 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         mGridView = (WordGridView) findViewById(R.id.grid_view);
 
         mWordsLayout = (LinearLayout) findViewById(R.id.word_select_container);
+        mPassStageLayout = (LinearLayout) findViewById(R.id.pass_view);
     }
 
-    //初始化数据
+    /**
+     * 初始化数据
+     */
     private void initData() {
         //初始化动画
         mPanAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
@@ -313,7 +330,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         super.onPause();
     }
 
-    //文字按钮点击事件
+    /**
+     * 文字按钮点击事件
+     */
     @Override
     public void onWordButtonClick(WordButton wordButton) {
 //        Toast.makeText(MainActivity.this, wordButton.getIndex() + "", Toast.LENGTH_SHORT).show();
@@ -321,11 +340,12 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 
         //获得答案状态
         int answerResult = checkAnswer();
-        LogUtil.d(TAG,answerResult + "");
+        LogUtil.d(TAG,"answerResult" , answerResult + "");
         //根据答案结果进行相应的处理
         switch (answerResult) {
             //过关并获得奖励
             case STATUS_ANSWER_RIGHT:
+                handlePassStageEvent();
                 break;
 
             //闪烁文字并进行提示
@@ -341,7 +361,16 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         }
     }
 
-    //设置单个已选文字框
+    /**
+     * 处理过关之后的相关逻辑
+     */
+    private void handlePassStageEvent() {
+        mPassStageLayout.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     *设置单个已选文字框
+     */
     private void setSelectedWords(WordButton wordButton) {
         for (int i = 0;i < mSelectedWords.size();i ++) {
             //如果此已选框尚未被填充汉字
@@ -352,7 +381,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
                 mSelectedWords.get(i).setVisible(true);
                 //记录索引
                 mSelectedWords.get(i).setIndex(wordButton.getIndex());
-                LogUtil.d(TAG, wordButton.getIndex() + "");
+                LogUtil.d(TAG, "wordButton.getIndex()" , wordButton.getIndex() + "");
 
                 //设置待选框的可见性
                 setWordButtonVisibility(wordButton,View.INVISIBLE);
@@ -361,7 +390,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         }
     }
 
-    //清除单个已选文字框
+    /**
+     * 清除单个已选文字框
+     */
     private void clearSelectedWords(WordButton wordButton) {
         //设置已选文字框的属性
         wordButton.getButton().setText("");
@@ -372,14 +403,18 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         setWordButtonVisibility(mAllWords.get(wordButton.getIndex()),View.VISIBLE);
     }
 
-    //设置WordButton的可见性
+    /**
+     * 设置WordButton的可见性
+     */
     private void setWordButtonVisibility(WordButton wordButton,int visibility) {
         wordButton.getButton().setVisibility(visibility);
         wordButton.setVisible(visibility == View.VISIBLE ? true : false);
-        LogUtil.d(TAG,wordButton.getVisible() + "");
+        LogUtil.d(TAG,"wordButton.getVisible()" , wordButton.getVisible() + "");
     }
 
-    //检查答案
+    /**
+     * 检查答案
+     */
     private int checkAnswer() {
         //先检查已选的汉字数与歌曲名汉字数是否匹配
         for (int i = 0;i < mSelectedWords.size();i ++ ) {
@@ -398,7 +433,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
                 ? STATUS_ANSWER_RIGHT : STATUS_ANSWER_WRONG;
     }
 
-    //闪烁文字
+    /**
+     * 闪烁文字
+     */
     private void sparkWords() {
         new Thread(new Runnable() {
             @Override

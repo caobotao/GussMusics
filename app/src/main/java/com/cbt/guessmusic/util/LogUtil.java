@@ -8,27 +8,27 @@ import android.util.Log;
 public class LogUtil {
     public static final boolean IS_DEBUG = true;
 
-    public static void d(String tag,String message) {
+    public static void d(String tag,String messageName,String message) {
         if (IS_DEBUG) {
-            Log.d(tag, message);
+            Log.d(tag, messageName + " --> " + message);
         }
     }
 
-    public static void w(String tag,String message) {
+    public static void w(String tag,String messageName,String message) {
         if (IS_DEBUG) {
-            Log.w(tag, message);
+            Log.w(tag, messageName + " --> " + message);
         }
     }
 
-    public static void i(String tag,String message) {
+    public static void i(String tag,String messageName,String message) {
         if (IS_DEBUG) {
-            Log.i(tag, message);
+            Log.i(tag, messageName + " --> " + message);
         }
     }
 
-    public static void e(String tag,String message) {
+    public static void e(String tag,String messageName,String message) {
         if (IS_DEBUG) {
-            Log.e(tag, message);
+            Log.e(tag, messageName + " --> " + message);
         }
     }
 
