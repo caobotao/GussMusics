@@ -330,11 +330,13 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 
             //闪烁文字并进行提示
             case STATUS_ANSWER_WRONG:
-
                 sparkWords();
                 break;
 
             case STATUS_ANSWER_LACK:
+                for (int i = 0; i < mSelectedWords.size(); i ++) {
+                    mSelectedWords.get(i).getButton().setTextColor(Color.WHITE);
+                }
                 break;
         }
     }
