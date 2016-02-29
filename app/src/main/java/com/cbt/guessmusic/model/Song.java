@@ -11,6 +11,15 @@ public class Song {
     //歌曲文件名
     private String songFileName;
 
+    public Song() {
+
+    }
+
+    public Song(String songName, String songFileName) {
+        this.songName = songName;
+        this.songFileName = songFileName;
+    }
+
     //获取歌曲名长度
     public int getSongNameLength() {
         return songName.length();

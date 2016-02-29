@@ -24,7 +24,7 @@ public class WordGridView extends GridView {
     private gridAdapter mAdapter;
     private Animation mScaleAnimation;
     private IWordButtonClickListener mWordButtonClickListener;
-
+    public static final int WORDS_COUNT = 24;
 
     public WordGridView(Context context) {
         this(context,null);
@@ -90,18 +90,24 @@ public class WordGridView extends GridView {
                 convertView = mInflater.inflate(R.layout.gridview_item, null);
                 holder = list.get(position);
                 holder.setIndex(position);
-                holder.setButton((Button) convertView.findViewById(R.id.item_btn));
+                /**
+                 * 添加判空,否则点击GridView的第一个按钮不会隐藏
+                 */
+                if (holder.getButton() == null) {
+                    holder.setButton((Button) convertView.findViewById(R.id.item_btn));
+                    holder.getButton().setText(holder.getWordString());
+                    holder.getButton().setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mWordButtonClickListener.onWordButtonClick(holder);
+                        }
+                    });
+                }
                 convertView.setTag(holder);
             } else {
                 holder = (WordButton) convertView.getTag();
             }
-            holder.getButton().setText(holder.getWordString());
-            holder.getButton().setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mWordButtonClickListener.onWordButtonClick(holder);
-                }
-            });
+
             convertView.startAnimation(mScaleAnimation);
             return convertView;
         }
