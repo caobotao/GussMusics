@@ -1,6 +1,7 @@
 package com.cbt.guessmusic.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,7 +17,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.cbt.guessmusic.R;
 import com.cbt.guessmusic.data.Const;
@@ -31,8 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by caobotao on 16/1/30.
@@ -59,20 +58,23 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 
 
     //播放音乐的按钮,盘片图片,控制杆图片
-    private ImageButton mIbtnPlayStart;
+    private ImageButton mViewPlayStart;
     private ImageView mViewPan;
     private ImageView mViewPanBar;
+
+    //现有金币的TextView
+    private TextView mViewCurrentCoins;
 
     //文字框的文字容器
     private ArrayList<WordButton> mAllWords;
     private ArrayList<WordButton> mSelectedWords;
-    private WordGridView mGridView;
+    private WordGridView mViewGridView;
 
     //已选择文字框的UI容器
-    private LinearLayout mWordsLayout;
+    private LinearLayout mViewWordsLayout;
 
-    //过关界面布局
-    private LinearLayout mPassStageLayout;
+//    //过关界面布局
+//    private LinearLayout mViewPassStageLayout;
 
     //当前歌曲
     private Song mCurrentSong;
@@ -83,6 +85,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
     private Handler sparkWordsHandler;
     private static final int SPARK_TIMES = 6;
     private static final String COLOR_STR = "color";
+
+    //目前的金币总数
+    private int mCurrentCoins = Const.TOTAL_COINS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,14 +121,14 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         mAllWords = initAllWord();
 
         //更新数据
-        mGridView.updateData(mAllWords);
+        mViewGridView.updateData(mAllWords);
 
         //初始化已选狂文字
         mSelectedWords = initSelectedWord();
 
         LayoutParams layoutParams = new LayoutParams(140,140);
         for (int i = 0;i < mSelectedWords.size(); i ++) {
-            mWordsLayout.addView(mSelectedWords.get(i).getButton(),layoutParams);
+            mViewWordsLayout.addView(mSelectedWords.get(i).getButton(),layoutParams);
         }
     }
 
@@ -224,7 +229,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
             @Override
             //当盘片动画开始时隐藏播放按钮
             public void onAnimationStart(Animation animation) {
-                mIbtnPlayStart.setVisibility(View.GONE);
+                mViewPlayStart.setVisibility(View.GONE);
             }
 
             @Override
@@ -248,7 +253,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
             @Override
             //当控制杆移出动画结束时设置播放按钮为可见
             public void onAnimationEnd(Animation animation) {
-                mIbtnPlayStart.setVisibility(View.VISIBLE);
+                mViewPlayStart.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -257,14 +262,19 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
             }
         });
 
-        mIbtnPlayStart.setOnClickListener(new OnClickListener() {
+        mViewPlayStart.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 handlePlayButton();
             }
         });
 
-        mGridView.setWordButtonClickListener(this);
+        mViewGridView.setWordButtonClickListener(this);
+
+        //删除一个非正确答案的汉字
+        handleClearOneChar();
+        //获取正确答案
+        handleBuyRightAnswer();
     }
 
     /**
@@ -279,14 +289,16 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
      * 初始化控件
      */
     private void initView() {
-        mIbtnPlayStart = (ImageButton) findViewById(R.id.ibtn_play_start);
+        mViewPlayStart = (ImageButton) findViewById(R.id.ibtn_play_start);
         mViewPan = (ImageView) findViewById(R.id.iv_game_disc);
         mViewPanBar = (ImageView) findViewById(R.id.iv_index_pin);
+        mViewCurrentCoins = (TextView) findViewById(R.id.tv_bar_coins);
 
-        mGridView = (WordGridView) findViewById(R.id.grid_view);
+        mViewGridView = (WordGridView) findViewById(R.id.grid_view);
 
-        mWordsLayout = (LinearLayout) findViewById(R.id.word_select_container);
-        mPassStageLayout = (LinearLayout) findViewById(R.id.pass_view);
+        mViewWordsLayout = (LinearLayout) findViewById(R.id.word_select_container);
+//        mViewPassStageLayout = (LinearLayout) findViewById(R.id.pass_view);
+
     }
 
     /**
@@ -307,6 +319,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         mBarOutLin = new LinearInterpolator();
         mBarOutAnim.setFillAfter(true);
         mBarOutAnim.setInterpolator(mBarOutLin);
+
+        //设置现有金币的文本
+        mViewCurrentCoins.setText(mCurrentCoins + "");
 
         sparkWordsHandler = new Handler(){
             @Override
@@ -365,7 +380,20 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
      * 处理过关之后的相关逻辑
      */
     private void handlePassStageEvent() {
-        mPassStageLayout.setVisibility(View.VISIBLE);
+//        mViewPassStageLayout.setVisibility(View.VISIBLE);
+        Intent passStageIntent = new Intent(MainActivity.this, PassStageActivity.class);
+        //将数据传递到PassStageActivity中
+        Bundle bundle = new Bundle();
+        //当前关歌曲名
+        bundle.putString(PassStageActivity.SONG_NAME_STR,mCurrentSong.getSongName());
+        //当前关索引
+        bundle.putInt(PassStageActivity.CURRENT_STAGE_STR,mCurrentStageIndex);
+        //本关奖励金币数
+        bundle.putInt(PassStageActivity.REWARD_COINS_STR,3);
+        passStageIntent.putExtras(bundle);
+        startActivity(passStageIntent);
+        //结束当前Activity,防止用户在PassStageActivity中通过点击返回键返回到本Activity
+        finish();
     }
 
     /**
@@ -457,5 +485,165 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
                 }
             }
         }).start();
+    }
+
+    /**
+     * 处理金币的增加或减少
+     */
+    private boolean addOrReduceCoins(int coins) {
+        if (mCurrentCoins + coins >= 0) {
+            mCurrentCoins += coins;
+            mViewCurrentCoins.setText(mCurrentCoins + "");
+            return true;
+        }
+        //减少失败
+        return false;
+    }
+
+    /**
+     * 处理从待选框中清除一个汉字的逻辑
+     */
+    private void handleClearOneChar() {
+        ImageButton button = (ImageButton) findViewById(R.id.clear_one_char);
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogUtil.d(TAG,"handleClearOneChar","handleClearOneChar");
+                clearOneChar();
+            }
+        });
+    }
+
+    /**
+     * 处理给出正确答案的逻辑
+     */
+    private void handleBuyRightAnswer() {
+        ImageButton button = (ImageButton) findViewById(R.id.buy_right_answer);
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tipRightAnswer();
+            }
+        });
+    }
+
+    /**
+     * 从配置文件中读取清除一个汉字需要花费的金币数
+     */
+    private int getClearOneCharCoin() {
+        return this.getResources().getInteger(R.integer.pay_delete_word);
+    }
+
+    /**
+     * 从配置文件中读取获得正确答案需要花费的金币数
+     */
+    private int getBuyRightAnswerCoin() {
+        return this.getResources().getInteger(R.integer.pay_tip_answer);
+    }
+
+    /**
+     * 给出正确答案
+     */
+    private void tipRightAnswer() {
+        boolean isFind = false;
+        for (int i = 0;i < mSelectedWords.size();i ++) {
+            if (mSelectedWords.get(i).getWordString().length() == 0) {
+                WordButton wordButton = findRightWord(i);
+                if (addOrReduceCoins(-getBuyRightAnswerCoin())) {
+                    isFind = true;
+                    onWordButtonClick(wordButton);
+                } else {
+                    // TODO: 16/3/1 金币不够,弹出对话框
+                }
+                break;
+            }
+        }
+        if (!isFind) {
+            sparkWords();
+        }
+    }
+
+    /**
+     * 根据已选框的索引获取一个正确答案的汉字
+     */
+    private WordButton findRightWord(int index) {
+        for (int i = 0;i < mAllWords.size(); i ++) {
+            if (mAllWords.get(i).getWordString().equals("" + mCurrentSong.getSongNameChars()[index])) {
+                return mAllWords.get(i);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 删除一个非正确答案的文字
+     */
+    private void clearOneChar() {
+        WordButton button = getOneRandomNotAnswerChar();
+        if (button == null) {
+            // TODO: 16/3/1 待选框中剩余的汉字已经是正确答案,弹出对话框
+            return;
+        }
+        if (!addOrReduceCoins(-getClearOneCharCoin())) {
+            // TODO: 16/3/1 金币不够,弹出对话框
+            return;
+        }
+        LogUtil.d(TAG,"getOneRandomNotAnswerChar", button.getWordString());
+        setWordButtonVisibility(button,View.INVISIBLE);
+    }
+
+    /**
+     * 待选框中剩余的汉字是否为歌曲名
+     */
+    private boolean isRemainingWordsEqualsSongName() {
+        List<Character> remainingWordsList = new ArrayList<>();
+        //获取到待选框剩余汉字的列表
+        for (int i = 0;i < mAllWords.size();i ++) {
+            if (mAllWords.get(i).getVisible()) {
+                remainingWordsList.add(mAllWords.get(i).getWordString().charAt(0));
+            }
+        }
+        //如果待选框剩余汉字的个数与歌曲名的汉字个数不等,则不是歌曲名
+        if (remainingWordsList.size() != mCurrentSong.getSongNameLength()) {
+            return false;
+        }
+        //获取歌曲名的汉字列表
+        List<Character> songNameWordsList = new ArrayList<>();
+        for (int i = 0;i < mCurrentSong.getSongNameLength();i++) {
+            songNameWordsList.add(mCurrentSong.getSongName().charAt(i));
+        }
+        //将待选框汉字列表和歌曲名汉字列表排序
+        Collections.sort(remainingWordsList);
+        Collections.sort(songNameWordsList);
+        LogUtil.d(TAG,"remainingWordsList",remainingWordsList.toString());
+        LogUtil.d(TAG,"songNameWordsList",songNameWordsList.toString());
+        //如果待选框汉字列表和歌曲名汉字列表中的元素一致则为歌曲名,否则不是
+        for (int i = 0;i < remainingWordsList.size();i++) {
+            if (remainingWordsList.get(i) != songNameWordsList.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 随机获取一个非正确答案的汉字
+     */
+    private WordButton getOneRandomNotAnswerChar() {
+        List<WordButton> notAnswerCharList = new ArrayList<>();
+        for (int i = 0;i < mAllWords.size();i ++) {
+            if (!isCharBelongSongName(mAllWords.get(i).getWordString().charAt(0)) && mAllWords.get(i).getVisible()) {
+                notAnswerCharList.add(mAllWords.get(i));
+            }
+        }
+        Collections.shuffle(notAnswerCharList);
+        return notAnswerCharList.size() > 0 ? notAnswerCharList.get(0) : null;
+    }
+
+    /**
+     * 判断某个汉字是否属于歌曲名
+     */
+    private boolean isCharBelongSongName(char ch) {
+        return mCurrentSong.getSongName().indexOf(ch) >= 0;
     }
 }

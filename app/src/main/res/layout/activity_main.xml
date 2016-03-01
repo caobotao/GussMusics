@@ -23,7 +23,4 @@
     <!-- 浮动按钮界面 -->
     <include layout="@layout/float_buttons"/>
 
-    <!-- 答案正确界面 -->
-    <include layout="@layout/answer_right"/>
-
 </FrameLayout>

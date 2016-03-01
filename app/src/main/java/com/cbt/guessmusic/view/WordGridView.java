@@ -36,11 +36,7 @@ public class WordGridView extends GridView {
 
     public WordGridView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-//        mAdapter = new gridAdapter(this.getContext());
-//        this.setAdapter(mAdapter);
     }
-
 
     //更新文字框数据
     public void updateData(ArrayList<WordButton> list) {
@@ -85,7 +81,7 @@ public class WordGridView extends GridView {
             final WordButton holder;
             if (convertView == null) {
                 mScaleAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.scale);
-                mScaleAnimation.setStartOffset(position * 100);
+                mScaleAnimation.setStartOffset(position * 50);
 
                 convertView = mInflater.inflate(R.layout.gridview_item, null);
                 holder = list.get(position);
