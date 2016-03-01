@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical" >
+
+    <!--<LinearLayout style="@style/top_title_style" >-->
+
+        <!--<Button-->
+            <!--android:id="@+id/register_back_login"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="5dp"-->
+            <!--android:background="@null"-->
+            <!--android:drawableLeft="@drawable/back"-->
+            <!--android:paddingLeft="5dp"-->
+            <!--android:text=" 登录"-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:textSize="18sp" />-->
+
+        <!--&lt;!&ndash; 注册的布局 &ndash;&gt;-->
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:layout_marginTop="2dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:gravity="center"-->
+            <!--android:paddingLeft="4dp"-->
+            <!--android:text="注册"-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:textSize="20sp" />-->
+
+        <!--&lt;!&ndash; 注册的布局 &ndash;&gt;-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/nickname_confirm"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_marginTop="2dp"-->
+            <!--android:gravity="center"-->
+            <!--android:paddingLeft="60dp"-->
+            <!--android:paddingRight="10dp"-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:textSize="20sp" />-->
+    <!--</LinearLayout>-->
+
+    <!--<RelativeLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="45dp"-->
+        <!--android:minHeight="50.0dip"-->
+        <!--android:paddingLeft="14.0dip"-->
+        <!--android:paddingRight="12.0dip" >-->
+
+        <!--<ImageView-->
+            <!--android:layout_width="23.0dip"-->
+            <!--android:layout_height="23.0dip"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:src="@drawable/user_picture" />-->
+
+        <!--<EditText-->
+            <!--android:id="@+id/et_register_username_id"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:background="@null"-->
+            <!--android:hint="用户名/手机号"-->
+            <!--android:paddingLeft="15dip"-->
+            <!--android:paddingTop="8dp"-->
+            <!--android:textColorHint="#BEBEBE"-->
+            <!--android:textSize="20sp" />-->
+    <!--</RelativeLayout>-->
+
+    <!--<View style="@style/PersonalLine" />-->
+
+    <!--<RelativeLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="45dp"-->
+        <!--android:minHeight="50.0dip"-->
+        <!--android:paddingLeft="14.0dip"-->
+        <!--android:paddingRight="12.0dip" >-->
+
+        <!--<ImageView-->
+            <!--android:layout_width="23.0dip"-->
+            <!--android:layout_height="23.0dip"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:src="@drawable/phone_picture" />-->
+
+        <!--<EditText-->
+            <!--android:id="@+id/et_register_code_id"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:background="@null"-->
+            <!--android:hint="请输入验证码"-->
+            <!--android:paddingLeft="15dip"-->
+            <!--android:paddingTop="8dp"-->
+            <!--android:textColorHint="#BEBEBE"-->
+            <!--android:textSize="20sp" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/bt_getcode_id"-->
+            <!--android:layout_width="120dp"-->
+            <!--android:layout_height="35dp"-->
+            <!--android:layout_marginLeft="200dp"-->
+            <!--android:layout_marginTop="5dp"-->
+            <!--android:background="@drawable/shape1"-->
+            <!--android:text="获取验证码"-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:textSize="10sp" />-->
+    <!--</RelativeLayout>-->
+
+    <!--<View style="@style/PersonalLine" />-->
+
+    <!--<RelativeLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="45dp"-->
+        <!--android:minHeight="50.0dip"-->
+        <!--android:paddingLeft="14.0dip"-->
+        <!--android:paddingRight="12.0dip" >-->
+
+        <!--<ImageView-->
+            <!--android:layout_width="23.0dip"-->
+            <!--android:layout_height="23.0dip"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:src="@drawable/lock" />-->
+
+        <!--<EditText-->
+            <!--android:id="@+id/et_register_password_id"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:background="@null"-->
+            <!--android:hint="请输入新密码"-->
+            <!--android:paddingLeft="15dip"-->
+            <!--android:paddingTop="8dp"-->
+            <!--android:textColorHint="#BEBEBE"-->
+            <!--android:textSize="20sp" />-->
+    <!--</RelativeLayout>-->
+
+    <!--<View style="@style/PersonalLine" />-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal" >-->
+
+        <!--&lt;!&ndash; 小对勾的布局 &ndash;&gt;-->
+
+        <!--<CheckBox-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_margin="10dp"-->
+            <!--android:layout_marginLeft="-10dp"-->
+            <!--android:scaleX="0.8"-->
+            <!--android:scaleY="0.8" />-->
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center_vertical"-->
+            <!--android:text="我同意"-->
+            <!--android:textSize="18sp" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/user_protocol"-->
+            <!--android:layout_width="200dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_gravity="center_vertical"-->
+            <!--android:layout_marginLeft="5dp"-->
+            <!--android:gravity="center"-->
+            <!--android:text="用户协议及隐私条款"-->
+            <!--android:textColor="#FE8B4A"-->
+            <!--android:textSize="18sp" />-->
+    <!--</LinearLayout>-->
+
+    <!--<Button-->
+        <!--android:id="@+id/bt_register_id"-->
+        <!--android:layout_width="245dp"-->
+        <!--android:layout_height="45dp"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--android:layout_marginBottom="14dp"-->
+        <!--android:layout_marginLeft="15dp"-->
+        <!--android:layout_marginRight="15dp"-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--android:background="@drawable/shape2"-->
+        <!--android:gravity="center"-->
+        <!--android:text="注  册"-->
+        <!--android:textColor="#FFFFFF"-->
+        <!--android:textSize="15sp" />-->
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginLeft="80dp"-->
+        <!--android:paddingTop="5dp"-->
+        <!--android:text="您也可以直接登录"-->
+        <!--android:textColor="#BEBEBE"-->
+        <!--android:textSize="20sp" />-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:baselineAligned="false"-->
+        <!--android:gravity="center"-->
+        <!--android:orientation="horizontal" >-->
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:gravity="center"-->
+            <!--android:orientation="vertical" >-->
+
+            <!--<Button-->
+                <!--android:layout_width="60dp"-->
+                <!--android:layout_height="60dp"-->
+                <!--android:background="@drawable/weixin_login" />-->
+
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="微信登录"-->
+                <!--android:textColor="#BEBEBE"-->
+                <!--android:textSize="20sp" />-->
+        <!--</LinearLayout>-->
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:gravity="center"-->
+            <!--android:orientation="vertical" >-->
+
+            <!--<Button-->
+                <!--android:layout_width="60dp"-->
+                <!--android:layout_height="60dp"-->
+                <!--android:background="@drawable/weibo_login" />-->
+
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="微博登录"-->
+                <!--android:textColor="#BEBEBE"-->
+                <!--android:textSize="20sp" />-->
+        <!--</LinearLayout>-->
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:gravity="center"-->
+            <!--android:orientation="vertical" >-->
+
+            <!--<Button-->
+                <!--android:layout_width="60dp"-->
+                <!--android:layout_height="60dp"-->
+                <!--android:background="@drawable/qq_login" />-->
+
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="QQ登录"-->
+                <!--android:textColor="#BEBEBE"-->
+                <!--android:textSize="20sp" />-->
+        <!--</LinearLayout>-->
+    <!--</LinearLayout>-->
+
+</LinearLayout>

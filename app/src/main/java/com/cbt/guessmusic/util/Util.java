@@ -11,15 +11,31 @@ import java.util.Random;
  * Created by caobotao on 16/2/28.
  */
 public class Util {
+    private static Util util;
+
+    private Util() {
+    }
+
+    public static Util getInstance() {
+        if (util == null) {
+            synchronized (Util.class) {
+                if (util == null) {
+                    util = new Util();
+                }
+            }
+        }
+        return util;
+    }
+
     //根据布局id获取对应View
-    public static View getView(Context context, int layoutId) {
+    public View getView(Context context, int layoutId) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(layoutId, null);
         return view;
     }
 
     //获取一个随机的汉字字符
-    public static char getRandomChineseChar() {
+    public char getRandomChineseChar() {
         String str = "";
         int highPos;
         int lowPos;

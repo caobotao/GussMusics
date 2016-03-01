@@ -32,15 +32,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="20"
-            android:textColor="@color/c_ghost_white"
+            android:text="20%"
+            android:textColor="@color/c_redorange"
             android:textSize="18sp"
             android:textStyle="bold"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="%的玩家!"
+            android:text="的玩家!"
             android:textColor="@color/c_ghost_white"
             android:textSize="18sp"
             android:textStyle="bold"/>
@@ -80,7 +80,7 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/pass_game_name"
+        android:id="@+id/pass_song_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

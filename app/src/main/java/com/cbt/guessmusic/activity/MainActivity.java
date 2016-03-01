@@ -38,6 +38,8 @@ import java.util.List;
  */
 public class MainActivity extends Activity implements IWordButtonClickListener {
     private static final String TAG = "MainActivity";
+    public static final String DELIVERED_STAGE = "delivered stage";
+
     //正确答案
     private static final int STATUS_ANSWER_RIGHT = 1;
     //错误答案
@@ -64,6 +66,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 
     //现有金币的TextView
     private TextView mViewCurrentCoins;
+    //当前关的TextView
+    private TextView mViewCurrentStage;
+
 
     //文字框的文字容器
     private ArrayList<WordButton> mAllWords;
@@ -79,7 +84,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
     //当前歌曲
     private Song mCurrentSong;
     //当前关卡索引
-    private int mCurrentStageIndex = -1;
+    private int mCurrentStageIndex = 0;
 
     //处理闪烁文字的handler
     private Handler sparkWordsHandler;
@@ -88,6 +93,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 
     //目前的金币总数
     private int mCurrentCoins = Const.TOTAL_COINS;
+
+    //从PassStageActivity传递来的关索引
+    private int mDeliveredStage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +123,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
      */
     private void initCurrentStageData() {
         //读取当前关的歌曲信息
-        mCurrentSong = getStageSong(++mCurrentStageIndex);
+        mCurrentSong = getStageSong(mCurrentStageIndex);
 
         //获得数据
         mAllWords = initAllWord();
@@ -156,7 +164,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         ArrayList<WordButton> data = new ArrayList<>();
         //获取所有的文字信息
         for (int i = 0;i < mCurrentSong.getSongNameLength();i++) {
-            View view = Util.getView(MainActivity.this, R.layout.gridview_item);
+            View view = Util.getInstance().getView(MainActivity.this, R.layout.gridview_item);
 
             final WordButton holder = new WordButton();
             holder.setButton((Button) view.findViewById(R.id.item_btn));
@@ -190,7 +198,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         }
         //存入随机汉字
         for (int i = mCurrentSong.getSongNameLength(); i < WordGridView.WORDS_COUNT; i ++) {
-            words[i] = Util.getRandomChineseChar() + "";
+            words[i] = Util.getInstance().getRandomChineseChar() + "";
         }
 
         //打乱汉字顺序
@@ -298,7 +306,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 
         mViewWordsLayout = (LinearLayout) findViewById(R.id.word_select_container);
 //        mViewPassStageLayout = (LinearLayout) findViewById(R.id.pass_view);
-
+        mViewCurrentStage = (TextView) findViewById(R.id.current_stage);
     }
 
     /**
@@ -336,6 +344,15 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
                 }
             }
         };
+
+        //如果此Activity是从PassStageActivity打开的,尝试读取请求的关索引
+        mDeliveredStage = getIntent().getIntExtra(DELIVERED_STAGE, -1);
+        if (mDeliveredStage != -1) {
+            mCurrentStageIndex = mDeliveredStage;
+        }
+
+        //设置当前关的索引TextView
+        mViewCurrentStage.setText((mCurrentStageIndex + 1) + "");
     }
 
     @Override
@@ -381,15 +398,24 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
      */
     private void handlePassStageEvent() {
 //        mViewPassStageLayout.setVisibility(View.VISIBLE);
+
+        // TODO: 16/3/1 停掉未播放完的音乐
+
+        //停掉未完成的动画
+        mViewPan.clearAnimation();
+
+        int rewardCoins = (mCurrentStageIndex + 1) * 3;
+
+
         Intent passStageIntent = new Intent(MainActivity.this, PassStageActivity.class);
         //将数据传递到PassStageActivity中
         Bundle bundle = new Bundle();
         //当前关歌曲名
         bundle.putString(PassStageActivity.SONG_NAME_STR,mCurrentSong.getSongName());
         //当前关索引
-        bundle.putInt(PassStageActivity.CURRENT_STAGE_STR,mCurrentStageIndex);
+        bundle.putInt(PassStageActivity.CURRENT_STAGE_STR,mCurrentStageIndex + 1);
         //本关奖励金币数
-        bundle.putInt(PassStageActivity.REWARD_COINS_STR,3);
+        bundle.putInt(PassStageActivity.REWARD_COINS_STR,rewardCoins);
         passStageIntent.putExtras(bundle);
         startActivity(passStageIntent);
         //结束当前Activity,防止用户在PassStageActivity中通过点击返回键返回到本Activity
