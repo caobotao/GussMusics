@@ -1,6 +1,8 @@
 package com.cbt.guessmusic.util;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -25,6 +27,13 @@ public class Util {
             }
         }
         return util;
+    }
+
+    //跳转至另一个Activity
+    public void startActivityWithoutData(Context context, Class dest) {
+        context.startActivity(new Intent(context, dest));
+        //关闭当前Activity
+        ((Activity)context).finish();
     }
 
     //根据布局id获取对应View

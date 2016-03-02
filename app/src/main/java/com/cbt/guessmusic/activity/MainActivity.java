@@ -1,5 +1,6 @@
 package com.cbt.guessmusic.activity;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -405,7 +406,6 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         mViewPan.clearAnimation();
 
         int rewardCoins = (mCurrentStageIndex + 1) * 3;
-
 
         Intent passStageIntent = new Intent(MainActivity.this, PassStageActivity.class);
         //将数据传递到PassStageActivity中

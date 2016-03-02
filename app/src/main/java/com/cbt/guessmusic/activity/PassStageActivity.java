@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.cbt.guessmusic.R;
 import com.cbt.guessmusic.data.Const;
+import com.cbt.guessmusic.util.Util;
 
 /**
  * Created by caobotao on 16/3/1.
@@ -45,7 +46,7 @@ public class PassStageActivity extends Activity {
             @Override
             public void onClick(View v) {
                 if (isTheLastStage()) {
-                    // TODO: 16/3/1 已经通关,进入通关界面
+                    Util.getInstance().startActivityWithoutData(PassStageActivity.this,AllPassActivity.class);
                 } else {
                     Intent intent = new Intent(PassStageActivity.this, MainActivity.class);
                     intent.putExtra(MainActivity.DELIVERED_STAGE, mPassStage);

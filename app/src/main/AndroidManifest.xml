@@ -16,6 +16,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.PassStageActivity"/>
+        <activity android:name=".activity.AllPassActivity"/>
     </application>
 
 </manifest>

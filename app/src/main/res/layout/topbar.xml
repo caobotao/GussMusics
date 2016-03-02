@@ -13,6 +13,7 @@
         android:layout_marginLeft="10dp"
         android:background="@drawable/back_button_icon"/>
     <FrameLayout
+        android:id="@+id/fl_add_coins"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
