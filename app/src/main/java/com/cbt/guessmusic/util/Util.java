@@ -1,10 +1,19 @@
 package com.cbt.guessmusic.util;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.cbt.guessmusic.R;
+import com.cbt.guessmusic.model.IDialogButtonListener;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
@@ -14,6 +23,7 @@ import java.util.Random;
  */
 public class Util {
     private static Util util;
+    private static AlertDialog mAlertDialog;
 
     private Util() {
     }
@@ -29,6 +39,69 @@ public class Util {
         return util;
     }
 
+    /**
+     * 显示自定义对话框
+     */
+    public void showDialog(Context context,boolean isOkDialog, String message, final IDialogButtonListener listener) {
+        //自定义对话框布局
+        View dialogView = getView(context, R.layout.warning_dialog);
+        Builder builder = new Builder(context);
+        TextView dialogContent = (TextView) dialogView.findViewById(R.id.dialog_content);
+        dialogContent.setText(message);
+
+        if (!isOkDialog) {
+            LinearLayout okButtonLayout = (LinearLayout) dialogView.findViewById(R.id.ok_button_layout);
+            okButtonLayout.setVisibility(View.INVISIBLE);
+
+            ImageButton yesButton = (ImageButton) dialogView.findViewById(R.id.yes_button);
+            ImageButton noButton = (ImageButton) dialogView.findViewById(R.id.no_button);
+
+            yesButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //隐藏对话框
+                    if (mAlertDialog != null) {
+                        mAlertDialog.cancel();
+                    }
+                    //执行点击"是"按钮时的回调方法
+                    if (listener != null) {
+                        listener.onYesButtonClick();
+                    }
+                }
+            });
+            noButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //隐藏对话框
+                    if (mAlertDialog != null) {
+                        mAlertDialog.cancel();
+                    }
+                }
+            });
+        } else {
+            ImageButton okButton = (ImageButton) dialogView.findViewById(R.id.ok_button);
+            LinearLayout okButtonLayout = (LinearLayout) dialogView.findViewById(R.id.ok_button_layout);
+            okButtonLayout.setVisibility(View.VISIBLE);
+            LinearLayout yesAndNoButtonLayout = (LinearLayout) dialogView.findViewById(R.id.yes_and_no_button_layout);
+            yesAndNoButtonLayout.setVisibility(View.GONE);
+
+            okButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //隐藏对话框
+                    if (mAlertDialog != null) {
+                        mAlertDialog.cancel();
+                    }
+                }
+            });
+        }
+        //设置View
+        builder.setView(dialogView);
+        //创建并显示对话框
+        mAlertDialog = builder.create();
+        mAlertDialog.show();
+    }
+
     //跳转至另一个Activity
     public void startActivityWithoutData(Context context, Class dest) {
         context.startActivity(new Intent(context, dest));
@@ -38,7 +111,8 @@ public class Util {
 
     //根据布局id获取对应View
     public View getView(Context context, int layoutId) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(layoutId, null);
         return view;
     }

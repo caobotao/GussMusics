@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.cbt.guessmusic.R;
 import com.cbt.guessmusic.data.Const;
+import com.cbt.guessmusic.model.IDialogButtonListener;
 import com.cbt.guessmusic.model.IWordButtonClickListener;
 import com.cbt.guessmusic.model.Song;
 import com.cbt.guessmusic.model.WordButton;
@@ -97,6 +98,11 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 
     //从PassStageActivity传递来的关索引
     private int mDeliveredStage;
+
+    //对话框按钮监听器
+    private IDialogButtonListener mClearOneWordDialogListener;
+    private IDialogButtonListener mBuyRightAnswerDialogListener;
+    private IDialogButtonListener mCoinNotEnoughDialogListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -354,6 +360,30 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 
         //设置当前关的索引TextView
         mViewCurrentStage.setText((mCurrentStageIndex + 1) + "");
+
+        //设置清除一个错误答案对话框按钮点击事件
+        mClearOneWordDialogListener = new IDialogButtonListener() {
+            @Override
+            public void onYesButtonClick() {
+                clearOneChar();
+            }
+        };
+
+        //设置获取正确答案对话框按钮点击事件
+        mBuyRightAnswerDialogListener = new IDialogButtonListener() {
+            @Override
+            public void onYesButtonClick() {
+                tipRightAnswer();
+            }
+        };
+
+        //设置金币不够时对话框按钮点击事件
+        mCoinNotEnoughDialogListener = new IDialogButtonListener() {
+            @Override
+            public void onYesButtonClick() {
+                // TODO: 16/3/2 去商店购买金币
+            }
+        };
     }
 
     @Override
@@ -535,7 +565,13 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
             @Override
             public void onClick(View v) {
                 LogUtil.d(TAG,"handleClearOneChar","handleClearOneChar");
-                clearOneChar();
+
+                //显示提示对话框
+                Util.getInstance().showDialog(
+                        MainActivity.this,
+                        false,
+                        "确定使用" + getClearOneCharCoin() + "金币去掉一个错误答案?",
+                        mClearOneWordDialogListener);
             }
         });
     }
@@ -548,7 +584,13 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                tipRightAnswer();
+
+                //显示提示对话框
+                Util.getInstance().showDialog(
+                        MainActivity.this,
+                        false,
+                        "确定使用" + getBuyRightAnswerCoin() + "金币获得一个正确答案?",
+                        mBuyRightAnswerDialogListener);
             }
         });
     }
@@ -579,7 +621,12 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
                     isFind = true;
                     onWordButtonClick(wordButton);
                 } else {
-                    // TODO: 16/3/1 金币不够,弹出对话框
+                    //金币不够,弹出对话框
+                    Util.getInstance().showDialog(
+                            MainActivity.this,
+                            false,
+                            "金币不足,去商店购买?",
+                            mCoinNotEnoughDialogListener);
                 }
                 break;
             }
@@ -608,10 +655,16 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         WordButton button = getOneRandomNotAnswerChar();
         if (button == null) {
             // TODO: 16/3/1 待选框中剩余的汉字已经是正确答案,弹出对话框
+            Util.getInstance().showDialog(MainActivity.this, true, "待选框中剩余的汉字已是正确答案", null);
             return;
         }
         if (!addOrReduceCoins(-getClearOneCharCoin())) {
-            // TODO: 16/3/1 金币不够,弹出对话框
+            //金币不够,弹出对话框
+            Util.getInstance().showDialog(
+                    MainActivity.this,
+                    false,
+                    "金币不足,去商店购买?",
+                    mCoinNotEnoughDialogListener);
             return;
         }
         LogUtil.d(TAG,"getOneRandomNotAnswerChar", button.getWordString());
