@@ -13,8 +13,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cbt.guessmusic.R;
+import com.cbt.guessmusic.data.Const;
 import com.cbt.guessmusic.model.IDialogButtonListener;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
@@ -42,7 +49,7 @@ public class Util {
     /**
      * 显示自定义对话框
      */
-    public void showDialog(Context context,boolean isOkDialog, String message, final IDialogButtonListener listener) {
+    public void showDialog(final Context context, boolean isOkDialog, String message, final IDialogButtonListener listener) {
         //自定义对话框布局
         View dialogView = getView(context, R.layout.warning_dialog);
         Builder builder = new Builder(context);
@@ -66,6 +73,8 @@ public class Util {
                     //执行点击"是"按钮时的回调方法
                     if (listener != null) {
                         listener.onYesButtonClick();
+                        //点击"是"按钮时的音效
+                        MusicPlayerUtil.playTone(context,MusicPlayerUtil.INDEX_ENTER);
                     }
                 }
             });
@@ -75,6 +84,8 @@ public class Util {
                     //隐藏对话框
                     if (mAlertDialog != null) {
                         mAlertDialog.cancel();
+                        //点击"否"按钮时的音效
+                        MusicPlayerUtil.playTone(context,MusicPlayerUtil.INDEX_CANCEL);
                     }
                 }
             });
@@ -91,6 +102,8 @@ public class Util {
                     //隐藏对话框
                     if (mAlertDialog != null) {
                         mAlertDialog.cancel();
+                        //播放按钮音效
+                        MusicPlayerUtil.playTone(context,MusicPlayerUtil.INDEX_CANCEL);
                     }
                 }
             });
@@ -102,14 +115,18 @@ public class Util {
         mAlertDialog.show();
     }
 
-    //跳转至另一个Activity
+    /**
+     * 跳转至另一个Activity
+     */
     public void startActivityWithoutData(Context context, Class dest) {
         context.startActivity(new Intent(context, dest));
         //关闭当前Activity
         ((Activity)context).finish();
     }
 
-    //根据布局id获取对应View
+    /**
+     * 根据布局id获取对应View
+     */
     public View getView(Context context, int layoutId) {
 //        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -117,7 +134,9 @@ public class Util {
         return view;
     }
 
-    //获取一个随机的汉字字符
+    /**
+     * 获取一个随机的汉字字符
+     */
     public char getRandomChineseChar() {
         String str = "";
         int highPos;
@@ -134,5 +153,58 @@ public class Util {
             e.printStackTrace();
         }
         return str.charAt(0);
+    }
+
+    /**
+     * 读取游戏数据
+     */
+    public int[] readGameData(Context context) {
+        FileInputStream fis = null;
+        int[] gameData = {0,Const.TOTAL_COINS};
+        try {
+            fis = context.openFileInput(Const.FILE_NAME_DATA);
+            DataInputStream dis = new DataInputStream(fis);
+            gameData[Const.INDEX_LOAD_DATA_STAGE] = dis.readInt();
+            gameData[Const.INDEX_LOAD_DATA_COINS] = dis.readInt();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return gameData;
+    }
+
+    /**
+     * 保存游戏数据
+     */
+    public void saveGameData(Context context, int stageIndex, int coins) {
+        FileOutputStream fos = null;
+        try {
+            fos = context.openFileOutput(Const.FILE_NAME_DATA, Context.MODE_PRIVATE);
+            DataOutputStream dos = new DataOutputStream(fos);
+            dos.writeInt(stageIndex);
+            dos.writeInt(coins);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 }

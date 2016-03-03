@@ -24,7 +24,7 @@ public class WordGridView extends GridView {
     private gridAdapter mAdapter;
     private Animation mScaleAnimation;
     private IWordButtonClickListener mWordButtonClickListener;
-    public static final int WORDS_COUNT = 10;
+    public static final int WORDS_COUNT = 24;
 
     public WordGridView(Context context) {
         this(context,null);

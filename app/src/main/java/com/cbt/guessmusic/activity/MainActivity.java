@@ -4,6 +4,9 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,6 +21,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.cbt.guessmusic.R;
@@ -27,6 +31,7 @@ import com.cbt.guessmusic.model.IWordButtonClickListener;
 import com.cbt.guessmusic.model.Song;
 import com.cbt.guessmusic.model.WordButton;
 import com.cbt.guessmusic.util.LogUtil;
+import com.cbt.guessmusic.util.MusicPlayerUtil;
 import com.cbt.guessmusic.util.Util;
 import com.cbt.guessmusic.view.WordGridView;
 
@@ -94,7 +99,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
     private static final String COLOR_STR = "color";
 
     //目前的金币总数
-    private int mCurrentCoins = Const.TOTAL_COINS;
+    private int mCurrentCoins;
 
     //从PassStageActivity传递来的关索引
     private int mDeliveredStage;
@@ -145,6 +150,21 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         for (int i = 0;i < mSelectedWords.size(); i ++) {
             mViewWordsLayout.addView(mSelectedWords.get(i).getButton(),layoutParams);
         }
+
+        //初始化唱片盘旋转动画需要持续的时间
+        initPanAnimationDuration(mPanAnim);
+
+        //进入本页面时自动播放音乐
+        handlePlayButton();
+    }
+
+    /**
+     * 初始化盘片旋转动画的持续时间
+     * @param mPanAnim
+     */
+    private void initPanAnimationDuration(Animation mPanAnim) {
+        LogUtil.d(TAG,"Pan duration",MusicPlayerUtil.getMusicDuration(MainActivity.this,mCurrentSong.getSongFileName()) + "");
+        mPanAnim.setDuration(MusicPlayerUtil.getMusicDuration(MainActivity.this,mCurrentSong.getSongFileName()));
     }
 
     /**
@@ -298,6 +318,13 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
     private void handlePlayButton() {
         //开始控制杆移入的动画
         mViewPanBar.startAnimation(mBarInAnim);
+        //播放音乐
+        MusicPlayerUtil.playSong(MainActivity.this, mCurrentSong.getSongFileName(), new OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mViewPan.clearAnimation();
+            }
+        });
     }
 
     /**
@@ -335,6 +362,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         mBarOutAnim.setFillAfter(true);
         mBarOutAnim.setInterpolator(mBarOutLin);
 
+        //从文件中读取保存的金币数,默认为Const.TOTAL_COINS
+        mCurrentCoins = Util.getInstance().readGameData(MainActivity.this)[Const.INDEX_LOAD_DATA_COINS];
+
         //设置现有金币的文本
         mViewCurrentCoins.setText(mCurrentCoins + "");
 
@@ -356,6 +386,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         mDeliveredStage = getIntent().getIntExtra(DELIVERED_STAGE, -1);
         if (mDeliveredStage != -1) {
             mCurrentStageIndex = mDeliveredStage;
+        } else {
+            mCurrentStageIndex = Util.getInstance().readGameData(MainActivity.this)[Const.INDEX_LOAD_DATA_STAGE];
+            LogUtil.d(TAG,"mCurrentStageIndex from file",mCurrentStageIndex + "");
         }
 
         //设置当前关的索引TextView
@@ -366,6 +399,8 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
             @Override
             public void onYesButtonClick() {
                 clearOneChar();
+                //金币的音效
+                MusicPlayerUtil.playTone(MainActivity.this, MusicPlayerUtil.INDEX_COIN);
             }
         };
 
@@ -374,6 +409,8 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
             @Override
             public void onYesButtonClick() {
                 tipRightAnswer();
+                //金币的音效
+                MusicPlayerUtil.playTone(MainActivity.this, MusicPlayerUtil.INDEX_COIN);
             }
         };
 
@@ -390,8 +427,20 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
     protected void onPause() {
         //当Activity被中断时清除动画
         mViewPan.clearAnimation();
+        //暂停音乐
+        MusicPlayerUtil.stopSong();
+        //保存游戏数据
+        Util.getInstance().saveGameData(MainActivity.this,mCurrentStageIndex,mCurrentCoins);
         super.onPause();
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        //按HOME键再重新回到游戏后需要自动播放音乐
+        handlePlayButton();
+    }
+
 
     /**
      * 文字按钮点击事件
@@ -430,12 +479,20 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
     private void handlePassStageEvent() {
 //        mViewPassStageLayout.setVisibility(View.VISIBLE);
 
-        // TODO: 16/3/1 停掉未播放完的音乐
+        //停掉未播放完的音乐
+        MusicPlayerUtil.stopSong();
+
+        //金币音效
+        MusicPlayerUtil.playTone(MainActivity.this, MusicPlayerUtil.INDEX_COIN);
 
         //停掉未完成的动画
         mViewPan.clearAnimation();
 
         int rewardCoins = (mCurrentStageIndex + 1) * 3;
+        //奖励过关金币
+        addOrReduceCoins(rewardCoins);
+        //保存游戏数据
+        Util.getInstance().saveGameData(MainActivity.this, mCurrentStageIndex, mCurrentCoins);
 
         Intent passStageIntent = new Intent(MainActivity.this, PassStageActivity.class);
         //将数据传递到PassStageActivity中
