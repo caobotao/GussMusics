@@ -33,6 +33,7 @@ import com.cbt.guessmusic.model.WordButton;
 import com.cbt.guessmusic.util.LogUtil;
 import com.cbt.guessmusic.util.MusicPlayerUtil;
 import com.cbt.guessmusic.util.Util;
+import com.cbt.guessmusic.util.WeiXinUtil;
 import com.cbt.guessmusic.view.WordGridView;
 
 import java.util.ArrayList;
@@ -117,6 +118,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         initData();
         initEvent();
         initCurrentStageData();
+//        System.out.println(Util.getInstance().getSignature(MainActivity.this,"com.cbt.guessmusic",null));
     }
 
     /**
@@ -310,6 +312,8 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         handleClearOneChar();
         //获取正确答案
         handleBuyRightAnswer();
+        //分享至微信
+        handleShareToWeiXin();
     }
 
     /**
@@ -611,6 +615,19 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
         }
         //减少失败
         return false;
+    }
+
+    /**
+     * 处理分享至微信的逻辑
+     */
+    private void handleShareToWeiXin() {
+        ImageButton button = (ImageButton) findViewById(R.id.btn_share_to_wx);
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WeiXinUtil.getInstance(MainActivity.this).sendRequest("我正在玩疯狂猜歌游戏,一起来玩吧!");
+            }
+        });
     }
 
     /**

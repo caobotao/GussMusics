@@ -92,6 +92,7 @@
         </FrameLayout>
     </LinearLayout>
     <ImageButton
+        android:id="@+id/btn_share_to_wx"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="5dp"

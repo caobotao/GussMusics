@@ -5,12 +5,18 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.Signature;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cbt.guessmusic.R;
 import com.cbt.guessmusic.data.Const;
@@ -206,5 +212,39 @@ public class Util {
             }
         }
 
+    }
+
+    /**
+     * 获取应用签名
+     */
+    public String getSignature(Context context,String pkgname,View view) {
+        PackageManager manager;
+        PackageInfo packageInfo;
+        Signature[] signatures;
+        StringBuilder builder;
+        String signature = null;
+        boolean isEmpty = TextUtils.isEmpty(pkgname);
+        manager = context.getPackageManager();
+        builder = new StringBuilder();
+        if (isEmpty) {
+            Toast.makeText(context, "应用程序的包名不能为空！", Toast.LENGTH_SHORT).show();
+        } else {
+            try {
+                /** 通过包管理器获得指定包名包含签名的包信息 **/
+                packageInfo = manager.getPackageInfo(pkgname, PackageManager.GET_SIGNATURES);
+                /******* 通过返回的包信息获得签名数组 *******/
+                signatures = packageInfo.signatures;
+                /******* 循环遍历签名数组拼接应用签名 *******/
+                for (Signature sign : signatures) {
+                    builder.append(sign.toCharsString());
+                }
+                /************** 得到应用签名 **************/
+                signature = builder.toString();
+                LogUtil.d("signature","",signature);
+            } catch (NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return signature;
     }
 }
