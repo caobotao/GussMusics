@@ -22,6 +22,10 @@ import com.cbt.guessmusic.R;
 import com.cbt.guessmusic.data.Const;
 import com.cbt.guessmusic.model.IDialogButtonListener;
 
+
+import org.apache.commons.codec.binary.Base64;
+
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
@@ -37,6 +41,10 @@ import java.util.Random;
 public class Util {
     private static Util util;
     private static AlertDialog mAlertDialog;
+    private static final String TAG = "Util";
+    private static final String GAME_DATA_SEPARATOR = ":";
+    private static final int STAGE_INDEX_DECODED_STR = 0;
+    private static final int COINS_DECODED_STR = 1;
 
     private Util() {
     }
@@ -170,8 +178,26 @@ public class Util {
         try {
             fis = context.openFileInput(Const.FILE_NAME_DATA);
             DataInputStream dis = new DataInputStream(fis);
-            gameData[Const.INDEX_LOAD_DATA_STAGE] = dis.readInt();
-            gameData[Const.INDEX_LOAD_DATA_COINS] = dis.readInt();
+
+            //获取输入流中的字符串
+            String data = null;
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int length = 0;
+            while ((length = dis.read(buffer)) != -1) {
+                baos.write(buffer,0,length);
+            }
+            data = baos.toString("UTF-8");
+            LogUtil.d(TAG,"data",data);
+
+            //解密过的关卡索引和金币数
+            String stageIndexDecodedStr = data.split(GAME_DATA_SEPARATOR)[STAGE_INDEX_DECODED_STR];
+            String coinsDecodedStr = data.split(GAME_DATA_SEPARATOR)[COINS_DECODED_STR];
+            int stageIndexDecoded = Integer.parseInt(decodeUseBase64(stageIndexDecodedStr));
+            int coinsDecoded = Integer.parseInt(decodeUseBase64(coinsDecodedStr));
+
+            gameData[Const.INDEX_LOAD_DATA_STAGE] = stageIndexDecoded;
+            gameData[Const.INDEX_LOAD_DATA_COINS] = coinsDecoded;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -196,8 +222,15 @@ public class Util {
         try {
             fos = context.openFileOutput(Const.FILE_NAME_DATA, Context.MODE_PRIVATE);
             DataOutputStream dos = new DataOutputStream(fos);
-            dos.writeInt(stageIndex);
-            dos.writeInt(coins);
+            //通过base64加密过的关卡索引和金币数
+            String stageIndexEncoded = encodeUseBase64(stageIndex + "");
+            String coinsEncoded = encodeUseBase64(coins + "");
+
+            dos.writeBytes(stageIndexEncoded);
+            dos.writeBytes(GAME_DATA_SEPARATOR);
+            dos.writeBytes(coinsEncoded);
+//            dos.writeInt(stageIndex);
+//            dos.writeInt(coins);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -246,5 +279,29 @@ public class Util {
             }
         }
         return signature;
+    }
+
+    /**
+     * 将字符串进行Base64编码加密
+     */
+    public String encodeUseBase64(String string) {
+        if (string == null) {
+            return null;
+        }
+        byte[] bytes = Base64.encodeBase64(string.getBytes());
+        LogUtil.d(TAG,"encode result",new String(bytes));
+        return new String(bytes);
+    }
+
+    /**
+     * 使用Base64将字符解码
+     */
+    public String decodeUseBase64(String string) {
+        if (string == null) {
+            return null;
+        }
+        byte[] bytes = Base64.decodeBase64(string.getBytes());
+        LogUtil.d(TAG,"decode result",new String(bytes));
+        return new String(bytes);
     }
 }

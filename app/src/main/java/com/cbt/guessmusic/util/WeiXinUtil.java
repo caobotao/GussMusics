@@ -11,6 +11,9 @@ import com.tencent.mm.sdk.openapi.WXImageObject;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.tencent.mm.sdk.openapi.WXTextObject;
 import com.tencent.mm.sdk.platformtools.Util;
+
+import org.apache.commons.codec.binary.Base64;
+
 /**
  * Created by caobotao on 16/3/3.
  */

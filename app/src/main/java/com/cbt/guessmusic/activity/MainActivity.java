@@ -728,7 +728,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
     private void clearOneChar() {
         WordButton button = getOneRandomNotAnswerChar();
         if (button == null) {
-            // TODO: 16/3/1 待选框中剩余的汉字已经是正确答案,弹出对话框
+            //待选框中剩余的汉字已经是正确答案,弹出对话框
             Util.getInstance().showDialog(MainActivity.this, true, "待选框中剩余的汉字已是正确答案", null);
             return;
         }

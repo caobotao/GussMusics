@@ -25,4 +25,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.+'
     compile 'com.cesarferreira.colorize:library:0.2.1'
     compile files('libs/libammsdk.jar')
+    compile files('libs/bcprov-ext-jdk15on-149.jar')
 }
