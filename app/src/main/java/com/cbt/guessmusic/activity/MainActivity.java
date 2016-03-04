@@ -1,5 +1,7 @@
 package com.cbt.guessmusic.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
@@ -7,6 +9,7 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,6 +20,7 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -516,16 +520,19 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
     /**
      *设置单个已选文字框
      */
-    private void setSelectedWords(WordButton wordButton) {
+    private void setSelectedWords(final WordButton wordButton) {
         for (int i = 0;i < mSelectedWords.size();i ++) {
+            final WordButton selectedWord = mSelectedWords.get(i);
             //如果此已选框尚未被填充汉字
-            if (mSelectedWords.get(i).getWordString().length() == 0) {
+            if (selectedWord.getWordString().length() == 0) {
+                setAnimationToSelectedWord(selectedWord, wordButton);
+
                 //设置此已选框的文字及可见性等属性
-                mSelectedWords.get(i).setWordString(wordButton.getWordString());
-                mSelectedWords.get(i).getButton().setText(wordButton.getWordString());
-                mSelectedWords.get(i).setVisible(true);
+                selectedWord.setWordString(wordButton.getWordString());
+                selectedWord.getButton().setText(wordButton.getWordString());
+                selectedWord.setVisible(true);
                 //记录索引
-                mSelectedWords.get(i).setIndex(wordButton.getIndex());
+                selectedWord.setIndex(wordButton.getIndex());
                 LogUtil.d(TAG, "wordButton.getIndex()" , wordButton.getIndex() + "");
 
                 //设置待选框的可见性
@@ -534,6 +541,44 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
             }
         }
     }
+
+    /**
+     * 设置文字按钮的平移动画效果
+     */
+    private void setAnimationToSelectedWord(final WordButton selectedWord, final WordButton wordButton) {
+        TranslateAnimation animation = (TranslateAnimation)
+                getAnimationFromViewToAnother(wordButton.getButton(), selectedWord.getButton());
+        wordButton.getButton().startAnimation(animation);
+    }
+
+    /**
+     * 将控件从一个位置移动到另一个位置
+     */
+    private Animation getAnimationFromViewToAnother(View from, View to) {
+        int[] fromPosition = getViewLocation(from);
+        int[] toPosition = getViewLocation(to);
+        LogUtil.d(TAG,"from x",fromPosition[0] + "");
+        LogUtil.d(TAG,"from y",fromPosition[1] + "");
+        LogUtil.d(TAG,"to x",toPosition[0] + "");
+        LogUtil.d(TAG,"to y",toPosition[1] + "");
+
+        TranslateAnimation animation = new TranslateAnimation(
+                0, toPosition[0] - fromPosition[0], 0, toPosition[1] - fromPosition[1]);
+        animation.setDuration(500);
+        animation.setFillAfter(false);
+        return animation;
+    }
+
+    /**
+     * 获取一个控件在屏幕中的显示位置
+     */
+    private int[] getViewLocation(View view) {
+        int[] position = new int[2];
+        view.getLocationOnScreen(position);
+
+        return position;
+    }
+
 
     /**
      * 清除单个已选文字框
@@ -561,6 +606,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
      * 检查答案
      */
     private int checkAnswer() {
+        for (int i = 0;i < mSelectedWords.size();i ++ ) {
+            LogUtil.d(TAG,"mSelectedWords " + i,mSelectedWords.get(i).getWordString());
+        }
         //先检查已选的汉字数与歌曲名汉字数是否匹配
         for (int i = 0;i < mSelectedWords.size();i ++ ) {
             if (mSelectedWords.get(i).getWordString().length() == 0) {
